@@ -1,0 +1,13 @@
+### PUT request to update pateint
+PUT http://localhost:4000/patients/223e4567-e89b-12d3-a456-426614174013
+Content-Type: application/json
+
+
+{
+  "patient_name" : "Daniel Lewis 2",
+  "email": "daniel.lewis@example.com",
+  "address": "56 Cypress St, Capital City 2",
+  "date_of_birth": "1976-06-10"
+}
+
+###
