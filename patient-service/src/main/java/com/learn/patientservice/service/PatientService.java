@@ -21,31 +21,37 @@ public class PatientService {
         this.patientRepository = patientRepository;
     }
 
-    public List<PatientResponseDTO> getALLPatients(){
+    public List<PatientResponseDTO> getALLPatients() {
         List<Patient> patients = patientRepository.findAll();
         return patients.stream().map(PatientMapper::toDTO).toList();
     }
 
-    public PatientResponseDTO createPatient(PatientRequestDTO patientRequestDTO){
+    public PatientResponseDTO createPatient(PatientRequestDTO patientRequestDTO) {
         Patient patient = patientRepository.findByEmail(patientRequestDTO.getEmail());
-        if(patient != null){
+        if (patient != null) {
             throw new DuplicateEmailException("Email already exists");
         }
         Patient newPatient = PatientMapper.toModel(patientRequestDTO);
         return PatientMapper.toDTO(patientRepository.save(newPatient));
     }
 
-    public PatientResponseDTO updatePatient(UUID id, PatientRequestDTO patientRequestDTO){
+    public PatientResponseDTO updatePatient(UUID id, PatientRequestDTO patientRequestDTO) {
         Patient patient = patientRepository.findByEmailAndIdNot(patientRequestDTO.getEmail(), id);
-        if(patient != null){
+        if (patient != null) {
             throw new DuplicateEmailException("Email already exists");
         }
         Patient updatedPatient = patientRepository.findById(id).orElseThrow(() -> new PatientDoesNotExistException(
-                "Patient with Id "+ id + " does not exists"));
+                "Patient with Id " + id + " does not exists"));
         updatedPatient.setPatient_name(patientRequestDTO.getPatient_name());
         updatedPatient.setEmail(patientRequestDTO.getEmail());
         updatedPatient.setAddress(patientRequestDTO.getAddress());
         updatedPatient.setDate_of_birth(LocalDate.parse(patientRequestDTO.getDate_of_birth()));
         return PatientMapper.toDTO(patientRepository.save(updatedPatient));
+    }
+
+    public void deletePatient(UUID id) {
+        Patient patient = patientRepository.findById(id).orElseThrow(() -> new PatientDoesNotExistException("Patient " +
+                "with id " + id + " does not exists"));
+        patientRepository.deleteById(id);
     }
 }
