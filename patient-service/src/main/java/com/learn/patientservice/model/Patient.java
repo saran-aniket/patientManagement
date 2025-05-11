@@ -15,6 +15,7 @@ import java.util.UUID;
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", updatable = false, nullable = false, length = 36)
     private UUID Id;
 
     @NotNull

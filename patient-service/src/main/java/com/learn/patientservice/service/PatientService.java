@@ -4,6 +4,7 @@ import com.learn.patientservice.dto.PatientRequestDTO;
 import com.learn.patientservice.dto.PatientResponseDTO;
 import com.learn.patientservice.exceptions.DuplicateEmailException;
 import com.learn.patientservice.exceptions.PatientDoesNotExistException;
+import com.learn.patientservice.grpc.BillingServiceGrpcClient;
 import com.learn.patientservice.mapper.PatientMapper;
 import com.learn.patientservice.model.Patient;
 import com.learn.patientservice.repository.PatientRepository;
@@ -15,9 +16,11 @@ import java.util.UUID;
 
 @Service
 public class PatientService {
-    private PatientRepository patientRepository;
+    private final PatientRepository patientRepository;
+    private final BillingServiceGrpcClient billingServiceGrpcClient;
 
-    public PatientService(PatientRepository patientRepository) {
+    public PatientService(PatientRepository patientRepository, BillingServiceGrpcClient billingServiceGrpcClient) {
+        this.billingServiceGrpcClient = billingServiceGrpcClient;
         this.patientRepository = patientRepository;
     }
 
@@ -32,7 +35,11 @@ public class PatientService {
             throw new DuplicateEmailException("Email already exists");
         }
         Patient newPatient = PatientMapper.toModel(patientRequestDTO);
-        return PatientMapper.toDTO(patientRepository.save(newPatient));
+        Patient createdPatient = patientRepository.save(newPatient);
+
+        billingServiceGrpcClient.createBillingAccount(createdPatient.getId().toString(), createdPatient.getPatient_name(), createdPatient.getEmail());
+
+        return PatientMapper.toDTO(createdPatient);
     }
 
     public PatientResponseDTO updatePatient(UUID id, PatientRequestDTO patientRequestDTO) {
@@ -40,8 +47,7 @@ public class PatientService {
         if (patient != null) {
             throw new DuplicateEmailException("Email already exists");
         }
-        Patient updatedPatient = patientRepository.findById(id).orElseThrow(() -> new PatientDoesNotExistException(
-                "Patient with Id " + id + " does not exists"));
+        Patient updatedPatient = patientRepository.findById(id).orElseThrow(() -> new PatientDoesNotExistException("Patient with Id " + id + " does not exists"));
         updatedPatient.setPatient_name(patientRequestDTO.getPatient_name());
         updatedPatient.setEmail(patientRequestDTO.getEmail());
         updatedPatient.setAddress(patientRequestDTO.getAddress());
@@ -50,8 +56,7 @@ public class PatientService {
     }
 
     public void deletePatient(UUID id) {
-        Patient patient = patientRepository.findById(id).orElseThrow(() -> new PatientDoesNotExistException("Patient " +
-                "with id " + id + " does not exists"));
+        Patient patient = patientRepository.findById(id).orElseThrow(() -> new PatientDoesNotExistException("Patient " + "with id " + id + " does not exists"));
         patientRepository.deleteById(id);
     }
 }
