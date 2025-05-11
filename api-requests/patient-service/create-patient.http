@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
         "patient_name" : "Daniel Lewis",
-        "email": "daniel2.lewis@example.com",
+        "email": "daniel2.lewis.kafka@example.com",
         "address": "56 Cypress St, Capital City",
         "date_of_birth": "1976-06-08",
         "date_of_admission": "2023-09-19"
