@@ -3,8 +3,8 @@ POST http://localhost:4000/patients
 Content-Type: application/json
 
 {
-        "patient_name" : "Daniel Lewis",
-        "email": "daniel2.lewis.kafka@example.com",
+        "patient_name" : "Daniel Lewis Consumer 2",
+        "email": "daniel2.lewis.kafkaConsumer2test2@example.com",
         "address": "56 Cypress St, Capital City",
         "date_of_birth": "1976-06-08",
         "date_of_admission": "2023-09-19"

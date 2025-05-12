@@ -1,0 +1,7 @@
+api
+docker
+db - RDBMS & Mongo
+rest
+grpc
+kafka
+api gateway
