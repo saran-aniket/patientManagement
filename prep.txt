@@ -5,4 +5,3 @@ rest
 grpc
 kafka
 api gateway
-Authorization - JWT tokens
